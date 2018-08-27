@@ -4,10 +4,25 @@
 
 int main(int argc, const char** argv)
 {
-	cv::Mat m = cv::Mat::zeros(4,4,CV_8U);
+	if (2 > argc)
+	{
+		std::cout << "Error: incorrect number of args.\n"
+				   << "Usage: " << argv[0] << " <image>\n";
+		return -1;
+	}
 
-	std::cout << m << "\n";
+	std::string filename(argv[1]);
 
+	cv::Mat img = cv::imread(filename, cv::IMREAD_COLOR);
+
+	if (img.empty())
+	{
+		std::cerr << "Error: Cannot read " << filename << "\n";
+		return -1;
+	}
+
+	cv::imshow(filename, img);
+	cv::waitKey();
 
 	return 0;
 }
