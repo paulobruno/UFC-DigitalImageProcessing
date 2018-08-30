@@ -8,3 +8,5 @@ void showHistogram(const cv::Mat& pHist, cv::Mat& pDst, const unsigned int pWidt
 void calcHistogram(const cv::Mat& pSrc, cv::Mat& pDst);
 
 void negativeFIlter(const cv::Mat& pSrc, cv::Mat& pDst);
+
+void logarithmicFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c);

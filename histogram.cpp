@@ -1,4 +1,5 @@
 #include "histogram.h"
+#include <math.h>
 
 #define T_MAX 255
 
@@ -36,6 +37,20 @@ void negativeFIlter(const cv::Mat& pSrc, cv::Mat& pDst)
 		for (unsigned int j = 0; j < pSrc.cols; ++j) 
 		{
 			pDst.at<uchar>(i, j) = T_MAX - pSrc.at<uchar>(i, j);
+		}
+	}
+}
+
+
+void logarithmicFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c)
+{
+	pDst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
+
+	for (unsigned int i = 0; i < pSrc.rows; ++i) 
+	{
+		for (unsigned int j = 0; j < pSrc.cols; ++j) 
+		{
+        	pDst.at<uchar>(i, j) = c*log(1 - pSrc.at<uchar>(i, j));
 		}
 	}
 }
