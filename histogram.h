@@ -10,3 +10,5 @@ void calcHistogram(const cv::Mat& pSrc, cv::Mat& pDst);
 void negativeFIlter(const cv::Mat& pSrc, cv::Mat& pDst);
 
 void logarithmicFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c);
+
+void powerFilter(const cv::Mat pSrc, cv::Mat pDst, const unsigned int c, const unsigned int gama); 

@@ -54,3 +54,16 @@ void logarithmicFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c)
 		}
 	}
 }
+
+void powerFilter(const cv::Mat pSrc, cv::Mat pDst, const unsigned int c, const unsigned int gama) 
+{
+	pDst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
+
+	for (unsigned int i = 0; i < pSrc.rows; ++i) 
+	{
+		for (unsigned int j = 0; j < pSrc.cols; ++j) 
+		{
+        	pDst.at<uchar>(i, j) = c*pow(pSrc.at<uchar>(i, j), gama);
+		}
+	}
+}
