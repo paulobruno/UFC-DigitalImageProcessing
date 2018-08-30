@@ -15,7 +15,7 @@ int main(int argc, const char** argv)
 
 	std::string filename(argv[1]);
 
-	cv::Mat img = cv::imread(filename, cv::IMREAD_COLOR);
+	cv::Mat img = cv::imread(filename, cv::IMREAD_GRAYSCALE);
 
 	if (img.empty())
 	{
@@ -23,7 +23,29 @@ int main(int argc, const char** argv)
 		return -1;
 	}
 
-	cv::imshow(filename, img);
+	//cv::imshow(filename, img);
+
+	cv::Mat hist;
+	calcHistogram(img, hist);
+
+	cv::Mat histImg;
+	showHistogram(hist, histImg, 512, 400);
+	cv::imshow("histImg", histImg);
+
+	//cv::Mat orimg = cv::Mat(8,8,CV_8U,data);
+	//std::cout << orimg << "\n";
+
+	cv::Mat eqImg;
+	equalizeHistogram(img, eqImg);
+	cv::imwrite("eq_hist.jpg", eqImg);
+
+	cv::Mat eqHist;
+	calcHistogram(eqImg, eqHist);
+
+	cv::Mat eqhimg;
+	showHistogram(eqHist, eqhimg, 512, 400);
+	cv::imshow("eq", eqhimg);
+
 	cv::waitKey();
 
 	return 0;

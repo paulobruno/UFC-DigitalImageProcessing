@@ -157,7 +157,6 @@ ui_*.h
 # Image ignore #
 *.wsq
 *.png
-*.jpg
 *.jpeg
 *.jpe
 *.jp2
