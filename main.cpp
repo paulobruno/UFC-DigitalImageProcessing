@@ -1,5 +1,6 @@
 #include <string>
 #include <opencv2/opencv.hpp>
+#include <vector>
 
 #include "histogram.h"
 
@@ -30,10 +31,7 @@ int main(int argc, const char** argv)
 
 	cv::Mat histImg;
 	showHistogram(hist, histImg, 512, 400);
-	cv::imshow("histImg", histImg);
-
-	//cv::Mat orimg = cv::Mat(8,8,CV_8U,data);
-	//std::cout << orimg << "\n";
+	//cv::imshow("histImg", histImg);
 
 	cv::Mat eqImg;
 	equalizeHistogram(img, eqImg);
@@ -51,16 +49,24 @@ int main(int argc, const char** argv)
 	//cv::imshow("neg", negative);
 
 	cv::Mat logImg;
-	logarithmicFilter(img, logImg, 4);
-	cv::imshow("log", logImg);
+	logarithmicFilter(img, logImg, 50);
+	//cv::imshow("log", logImg);
 
 	cv::Mat gama;
-	//powerFilter(img, gama, 4, 10);
+	powerFilter(img, gama, 1, 0.8f);
 	//cv::imshow("gama", gama);
 
 	cv::Mat linear;
 	linearParts(img, 100, 180, 150, 120, linear);
-	cv::imshow("linear", linear);
+	//cv::imshow("linear", linear);
+
+    std::vector<cv::Mat> slices;
+    bitPlaneSlice(img, slices);
+
+    for (unsigned int i = 0; i < slices.size(); ++i)
+    {
+        cv::imshow("slice" + std::to_string(i), slices.at(i));
+    }
 
 	cv::waitKey();
 

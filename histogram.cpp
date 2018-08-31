@@ -1,5 +1,6 @@
 #include "histogram.h"
 #include <math.h>
+#include <algorithm>
 
 #define T_MAX 255
 
@@ -100,7 +101,7 @@ void equalizeHistogram(const cv::Mat& pSrc, cv::Mat& pDst)
 	}
 }
 
-// TODO: converter pSrc para float de 0 a 1 antes de aplicar o log
+
 void logarithmicFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c)
 {
 	pDst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
@@ -109,13 +110,13 @@ void logarithmicFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c)
 	{
 		for (unsigned int j = 0; j < pSrc.cols; ++j) 
 		{
-	        	pDst.at<uchar>(i, j) = c * log(1 - pSrc.at<uchar>(i, j));
+	        	pDst.at<uchar>(i, j) = (uchar)std::min((double)255.0f, ((float)c * log((float)pSrc.at<uchar>(i, j) + 1.0f)));
 		}
 	}
 }
 
-// TODO: converter o pSrc para float antes de aplicar a potencia
-void powerFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c, const unsigned int gama) 
+
+void powerFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c, const float gama) 
 {
 	pDst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
 
@@ -123,7 +124,7 @@ void powerFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c, const
 	{
 		for (unsigned int j = 0; j < pSrc.cols; ++j) 
 		{
-			pDst.at<uchar>(i, j) = c * pow(pSrc.at<uchar>(i, j), gama);
+			pDst.at<uchar>(i, j) = (uchar)std::min(255.0f, (float)c * (float)pow((float)pSrc.at<uchar>(i, j), gama) );
 		}
 	}
 }
@@ -134,15 +135,12 @@ void linearParts(const cv::Mat& pSrc, const unsigned int x1, const unsigned int 
 	float a1 = (float)y1 / (float)x1;
 	float b1 = 0.0f;
 
-	float a2 = (float)(y2 - y1) / (float)(x2 - x1);
+	float a2 = ((float)y2 - (float)y1) / ((float)x2 - (float)x1);
 	float b2 = (float)y2 - a2 * (float)x2;
 
-	float a3 = (float)(255 - y1) / (float)(255 - x2);
+	float a3 = (255.0f - (float)y2) / (255.0f - (float)x2);
 	float b3 = 255.0f * (1.0f - a3);
 
-	std::cout << a1 << " " << b1 << " "
-			<< a2 << " " << b2 << " "
-			<< a3 << " " << b3 << "\n";
 	cv::Mat lookUpTable = cv::Mat::zeros(1, 256, CV_8U);
 
 	for (unsigned int i = 0; i < x1; ++i)
@@ -162,8 +160,6 @@ void linearParts(const cv::Mat& pSrc, const unsigned int x1, const unsigned int 
 
 	pDst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
 
-	std::cout << lookUpTable << "\n";
-
 	for (unsigned int i = 0; i < pSrc.rows; ++i) 
 	{
 		for (unsigned int j = 0; j < pSrc.cols; ++j) 
@@ -171,4 +167,43 @@ void linearParts(const cv::Mat& pSrc, const unsigned int x1, const unsigned int 
 			pDst.at<uchar>(i, j) = lookUpTable.at<uchar>(0, pSrc.at<uchar>(i, j));
 		}
 	}
+}
+
+
+void bitPlaneSlice(const cv::Mat& pSrc, std::vector<cv::Mat>& pSlices)
+{
+    pSlices.clear();
+
+    for (unsigned int i = 0; i < 8; ++i)
+    {
+        cv::Mat temp = cv::Mat::zeros(pSrc.size(), CV_8U);
+        pSlices.push_back(temp);
+    }
+
+    std::cout << (int)(156 & (2 << 1)) << "\n";
+
+    for (unsigned int i = 0; i < pSrc.rows; ++i)
+    {
+        for (unsigned int j = 0; j < pSrc.cols; ++j)
+        {
+            for (unsigned int b = 0; b < 8; ++b)
+            {
+                pSlices.at(b).at<uchar>(i, j) = pSrc.at<uchar>(i, j) & (1 << b);
+            }
+        }
+    }
+
+    // Debug: imagem completa formada por todos os slices, deve ficar igual aa original
+    cv::Mat temp = cv::Mat::zeros(pSrc.size(), CV_8U);
+    pSlices.push_back(temp);
+    for (unsigned int i = 0; i < pSrc.rows; ++i)
+    {
+        for (unsigned int j = 0; j < pSrc.cols; ++j)
+        {
+            for (unsigned int b = 0; b < 8; ++b)
+            {
+                pSlices.at(8).at<uchar>(i, j) |= pSlices.at(b).at<uchar>(i, j);
+            }
+        }
+    }
 }
