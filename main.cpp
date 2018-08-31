@@ -37,14 +37,30 @@ int main(int argc, const char** argv)
 
 	cv::Mat eqImg;
 	equalizeHistogram(img, eqImg);
-	cv::imwrite("eq_hist.jpg", eqImg);
+	//cv::imshow("eq_hist.jpg", eqImg);
 
 	cv::Mat eqHist;
 	calcHistogram(eqImg, eqHist);
 
 	cv::Mat eqhimg;
 	showHistogram(eqHist, eqhimg, 512, 400);
-	cv::imshow("eq", eqhimg);
+	//cv::imshow("eq", eqhimg);
+
+	cv::Mat negative;
+	negativeFilter(img, negative);
+	//cv::imshow("neg", negative);
+
+	cv::Mat logImg;
+	logarithmicFilter(img, logImg, 4);
+	cv::imshow("log", logImg);
+
+	cv::Mat gama;
+	//powerFilter(img, gama, 4, 10);
+	//cv::imshow("gama", gama);
+
+	cv::Mat linear;
+	linearParts(img, 100, 180, 150, 120, linear);
+	cv::imshow("linear", linear);
 
 	cv::waitKey();
 
