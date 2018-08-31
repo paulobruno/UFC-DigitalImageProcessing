@@ -110,7 +110,11 @@ void logarithmicFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c)
 	{
 		for (unsigned int j = 0; j < pSrc.cols; ++j) 
 		{
+<<<<<<< HEAD
 	        	pDst.at<uchar>(i, j) = (uchar)std::min((double)255.0f, ((float)c * log((float)pSrc.at<uchar>(i, j) + 1.0f)));
+=======
+	        	pDst.at<uchar>(i, j) = (uchar)std::min(255.0f, ((float)c * log((float)pSrc.at<uchar>(i, j) + 1.0f)));
+>>>>>>> f64a6f3ebaac13b7b841dc665e271a740059c0aa
 		}
 	}
 }
