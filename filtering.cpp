@@ -95,8 +95,6 @@ void bitPlaneSlice(const cv::Mat& pSrc, std::vector<cv::Mat>& pSlices)
         pSlices.push_back(temp);
     }
 
-    std::cout << (int)(156 & (2 << 1)) << "\n";
-
     for (unsigned int i = 0; i < pSrc.rows; ++i)
     {
         for (unsigned int j = 0; j < pSrc.cols; ++j)

@@ -5,13 +5,12 @@
 
 void showHistogram(const cv::Mat& pHist, cv::Mat& pDst, const unsigned int pWidth, const unsigned int pHeight)
 {
-	int hist_size = 256;	
-	int binWidth = cvRound((double) pWidth / hist_size);
+	int binWidth = cvRound((double) pWidth / pHist.cols);
 	
 	pDst = cv::Mat::zeros(pHeight, pWidth, CV_8U);
 	cv::normalize(pHist, pHist, 0, pHeight, cv::NORM_MINMAX, -1, cv::Mat());
 	
-	for (unsigned int i = 0; i < hist_size; ++i)
+	for (unsigned int i = 0; i < pHist.cols; ++i)
 	{
 		cv::line(pDst, cv::Point(binWidth * i, pHeight), 
 			cv::Point(binWidth * i, pHeight - pHist.at<int>(i)), 

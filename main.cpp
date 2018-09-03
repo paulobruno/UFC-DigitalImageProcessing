@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "histogram.h"
+#include "filtering.h"
 
 
 int main(int argc, const char** argv)
