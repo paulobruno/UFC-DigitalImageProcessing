@@ -13,3 +13,5 @@ void powerFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int c, const
 void linearParts(const cv::Mat& pSrc, const unsigned int x1, const unsigned int y1, const unsigned int x2, const unsigned int y2, cv::Mat& pDst);
 
 void bitPlaneSlice(const cv::Mat& pSrc, std::vector<cv::Mat>& pSlices);
+
+void medianFilter(const cv::Mat& pSrc, cv::Mat& pDst);
