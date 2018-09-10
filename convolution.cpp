@@ -171,3 +171,50 @@ void sobelFilter(const cv::Mat& pSrc, cv::Mat& pDst, const Padding pPad)
         }
     }
 }
+
+
+void medianFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad)
+{
+    cv::Mat src;
+    
+    switch (pPad)
+    {
+        case WHITE_PADDED:
+            addBorder(pSrc, src, 255, 1);
+            break;
+            
+        case BLACK_PADDED:
+            addBorder(pSrc, src, 0, 1);
+            break;
+            
+        default:
+            src = pSrc.clone();
+            break;
+    }
+
+    // PB: essa soma com 1 e o resto eh p garantir q funciona par e impar
+    pDst = cv::Mat::zeros(src.rows - 2,
+                          src.cols - 2,
+                          CV_8U);
+    
+    // PB: percorre de 1 .. size-1 tanto se for impar ou par
+    for (unsigned int row = 1; row < src.rows - 1; ++row) 
+    { 
+        for (unsigned int col = 1; col < src.cols - 1; ++col) 
+        {
+        	std::vector<uchar> values;
+            
+            for (int i = -1; i < 2; ++i)
+            {
+                for (int j = -1; j < 2; ++j) 
+                {
+                    values.push_back(src.at<uchar>(row+i, col+j));
+                }
+            } 
+            
+            std::sort(values.begin(), values.end());
+			   
+            pDst.at<uchar>(row - 1, col - 1) = (uchar)std::max(0, std::min(255, (int)values.at(4)));
+        }
+    }
+}

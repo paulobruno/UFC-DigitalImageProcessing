@@ -120,9 +120,3 @@ void bitPlaneSlice(const cv::Mat& pSrc, std::vector<cv::Mat>& pSlices)
         }
     }*/
 }
-
-
-void medianFilter(const cv::Mat& pSrc, cv::Mat& pDst)
-{
-
-}

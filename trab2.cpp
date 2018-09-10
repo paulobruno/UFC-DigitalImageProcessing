@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "convolution.h"
-#include "filtering.h"
 
 
 int main(int argc, const char** argv)
@@ -98,7 +97,7 @@ int main(int argc, const char** argv)
     
     
     // Highboost
-    int c = 4;
+    int c = 1;
     int highboostValues[9] = {-1,  -1, -1,
                               -1, c+8, -1,
                               -1,  -1, -1};
@@ -108,6 +107,13 @@ int main(int argc, const char** argv)
     conv2d(img, highboostMask, highboostImg);
     
     cv::imshow("highboost", highboostImg);
+
+
+    // Median
+    cv::Mat medianImg;
+    medianFilter(img, medianImg);
+
+    cv::imshow("median", medianImg);
     
     
     cv::waitKey();
