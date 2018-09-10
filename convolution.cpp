@@ -29,7 +29,7 @@ void conv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst, const Pa
             {
                 for (int j = -(int)kCols_2; j < endC; ++j) 
                 {
-                    accumulation += (int)pSrc.at<uchar>(row+i, col+j) * pKernel.at<int>(1+i, 1+j);
+                    accumulation += (int)pSrc.at<uchar>(row+i, col+j) * pKernel.at<int>(kRows_2+i, kCols_2+j);
                 }
             } 
             
@@ -70,17 +70,17 @@ void weightedConv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst, 
 
     int endR = kRows_2 + (pKernel.rows % 2);
     int endC = kCols_2 + (pKernel.cols % 2);
-    
+                
     // PB: soma com resto da divisao por 2 eh para garantir que funciona tanto
     //   com kernel de tamanho impar quanto par
-    for (int i = -(int)kRows_2; i < endR; ++i)
+    for (int i = 0; i < pKernel.rows; ++i)
     {
-        for (int j = -(int)kCols_2; j < endC; ++j) 
+        for (int j = 0; j < pKernel.cols; ++j) 
         {
-            kernelSum += pKernel.at<int>(1+i, 1+j);
+            kernelSum += pKernel.at<int>(i, j);
         }
     }
-
+    
     // PB: percorre de 1 .. size-1 tanto se for impar ou par
     for (unsigned int row = kRows_2; row < src.rows + 1 - (kRows_2 + (pKernel.rows % 2)); ++row) 
     { 
@@ -92,7 +92,7 @@ void weightedConv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst, 
             {
                 for (int j = -(int)kCols_2; j < endC; ++j) 
                 {
-                    accumulation += (int)src.at<uchar>(row+i, col+j) * pKernel.at<int>(1+i, 1+j);
+                    accumulation += (int)src.at<uchar>(row+i, col+j) * pKernel.at<int>(kRows_2+i, kCols_2+j);
                 }
             } 
             
