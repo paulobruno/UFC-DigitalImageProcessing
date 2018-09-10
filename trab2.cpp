@@ -31,6 +31,15 @@ int main(int argc, const char** argv)
 
 
     // Average
+    int averageValues[9] = {1,1,1,
+    						1,1,1,
+    						1,1,1};
+    cv::Mat averageMask = cv::Mat(3, 3, CV_32S, averageValues);
+
+    cv::Mat averageImg;
+    weightedConv2d(img, averageMask, averageImg);
+
+    cv::imshow("average", averageImg);
 
        
     // Weighted average
@@ -76,6 +85,16 @@ int main(int argc, const char** argv)
     
 
     // Laplacian
+    int laplacianValues[9] = {0,-1,0,
+    						 -1,4,-1,
+    						 0,-1, 0};
+
+    const cv::Mat laplacianMask = cv::Mat(3, 3 ,CV_32S ,laplacianValues);
+
+    cv::Mat laplacianImg;
+    conv2d(img, laplacianMask, laplacianImg);
+    cv::imshow("laplacian", laplacianImg);
+
     
     
     // Highboost
