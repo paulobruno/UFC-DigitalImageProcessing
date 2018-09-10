@@ -11,8 +11,8 @@ enum Padding
 };
 
 
-void conv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst);
+void conv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst, const Padding pPad = NOT_PADDED);
 
-void paddedConv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst, const Padding = WHITE_PADDED);
+void weightedConv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst, const Padding pPad = NOT_PADDED);
 
-void weightedConv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst);
+void addBorder(const cv::Mat& pSrc, cv::Mat& pDst, const uchar pBorderValue, const unsigned int pBorderSize);
