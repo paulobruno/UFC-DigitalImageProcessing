@@ -114,3 +114,60 @@ void addBorder(const cv::Mat& pSrc, cv::Mat& pDst, const uchar pBorderValue, con
         }
     }
 }
+
+
+void sobelFilter(const cv::Mat& pSrc, cv::Mat& pDst, const Padding pPad)
+{
+    cv::Mat src;
+    
+    switch (pPad)
+    {
+        case WHITE_PADDED:
+            addBorder(pSrc, src, 255, 1);
+            break;
+            
+        case BLACK_PADDED:
+            addBorder(pSrc, src, 0, 1);
+            break;
+            
+        default:
+            src = pSrc.clone();
+            break;
+    }
+
+    // PB: essa soma com 1 e o resto eh p garantir q funciona par e impar
+    pDst = cv::Mat::zeros(src.rows - 2,
+                          src.cols - 2,
+                          CV_8U);
+    
+    int sobelXValues[9] = {1, 0, -1,
+                           2, 0, -2,
+                           1, 0, -1};
+    int sobelYValues[9] = { 1,  2,  1,
+                            0,  0,  0,
+                           -1, -2, -1};
+    cv::Mat gxKernel = cv::Mat(3, 3, CV_32S, sobelXValues);
+    cv::Mat gyKernel = cv::Mat(3, 3, CV_32S, sobelYValues);
+
+    // PB: percorre de 1 .. size-1 tanto se for impar ou par
+    for (unsigned int row = 1; row < src.rows - 1; ++row) 
+    { 
+        for (unsigned int col = 1; col < src.cols - 1; ++col) 
+        {
+            int accX = 0;
+            int accY = 0;
+            
+            for (int i = -1; i < 2; ++i)
+            {
+                for (int j = -1; j < 2; ++j) 
+                {
+                    accX += (int)src.at<uchar>(row+i, col+j) * gxKernel.at<int>(1+i, 1+j);
+                    accY += (int)src.at<uchar>(row+i, col+j) * gyKernel.at<int>(1+i, 1+j);
+                }
+            } 
+            
+            int magnitude = std::sqrt(accX * accX + accY * accY);
+            pDst.at<uchar>(row - 1, col - 1) = (uchar)std::max(0, std::min(255, magnitude));
+        }
+    }
+}

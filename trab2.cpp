@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "convolution.h"
+#include "filtering.h"
 
 
 int main(int argc, const char** argv)
@@ -27,6 +28,9 @@ int main(int argc, const char** argv)
 	
     // Imagem original
 	cv::imshow(filename, img);
+
+
+    // Average
 
        
     // Weighted average
@@ -64,6 +68,12 @@ int main(int argc, const char** argv)
     
     cv::imshow("sobelY", sobelYImg);
 
+
+    // Sobel
+    cv::Mat sobelImg;
+    sobelFilter(img, sobelImg);
+    cv::imshow("sobel", sobelImg);
+    
 
     // Laplacian
     

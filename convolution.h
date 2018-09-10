@@ -16,3 +16,5 @@ void conv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst, const Pa
 void weightedConv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst, const Padding pPad = NOT_PADDED);
 
 void addBorder(const cv::Mat& pSrc, cv::Mat& pDst, const uchar pBorderValue, const unsigned int pBorderSize);
+
+void sobelFilter(const cv::Mat& pSrc, cv::Mat& pDst, const Padding pPad = NOT_PADDED);
