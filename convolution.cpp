@@ -1,4 +1,5 @@
 #include "convolution.h"
+#include "padding.h"
 
 #include <cstdio>
 #include <cmath>
@@ -102,20 +103,6 @@ void weightedConv2d(const cv::Mat& pSrc, const cv::Mat& pKernel, cv::Mat& pDst, 
 }
 
 
-void addBorder(const cv::Mat& pSrc, cv::Mat& pDst, const uchar pBorderValue, const unsigned int pBorderSize)
-{
-    pDst = cv::Mat(pSrc.rows + 2*pBorderSize, pSrc.cols + 2*pBorderSize, CV_8U, cv::Scalar(pBorderValue));
-    
-    for (unsigned int row = 0; row < pSrc.rows; ++row) 
-    { 
-        for (unsigned int col = 0; col < pSrc.cols; ++col) 
-        {
-            pDst.at<uchar>(row + pBorderSize, col + pBorderSize) = pSrc.at<uchar>(row, col);
-        }
-    }
-}
-
-
 void sobelFilter(const cv::Mat& pSrc, cv::Mat& pDst, const Padding pPad)
 {
     cv::Mat src;
@@ -172,49 +159,3 @@ void sobelFilter(const cv::Mat& pSrc, cv::Mat& pDst, const Padding pPad)
     }
 }
 
-
-void medianFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad)
-{
-    cv::Mat src;
-    
-    switch (pPad)
-    {
-        case WHITE_PADDED:
-            addBorder(pSrc, src, 255, 1);
-            break;
-            
-        case BLACK_PADDED:
-            addBorder(pSrc, src, 0, 1);
-            break;
-            
-        default:
-            src = pSrc.clone();
-            break;
-    }
-
-    // PB: essa soma com 1 e o resto eh p garantir q funciona par e impar
-    pDst = cv::Mat::zeros(src.rows - 2,
-                          src.cols - 2,
-                          CV_8U);
-    
-    // PB: percorre de 1 .. size-1 tanto se for impar ou par
-    for (unsigned int row = 1; row < src.rows - 1; ++row) 
-    { 
-        for (unsigned int col = 1; col < src.cols - 1; ++col) 
-        {
-        	std::vector<uchar> values;
-            
-            for (int i = -1; i < 2; ++i)
-            {
-                for (int j = -1; j < 2; ++j) 
-                {
-                    values.push_back(src.at<uchar>(row+i, col+j));
-                }
-            } 
-            
-            std::sort(values.begin(), values.end());
-			   
-            pDst.at<uchar>(row - 1, col - 1) = (uchar)std::max(0, std::min(255, (int)values.at(4)));
-        }
-    }
-}

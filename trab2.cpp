@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "convolution.h"
+#include "spacialFiltering.h"
 
 
 int main(int argc, const char** argv)
