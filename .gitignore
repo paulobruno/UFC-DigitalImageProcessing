@@ -155,20 +155,20 @@ ui_*.h
 *.pyc
 
 # Image ignore #
-*.wsq
-*.png
-*.jpeg
-*.jpe
-*.jp2
-*.bmp
-*.dib
-*.tif
-*.tiff
-*.pgm
-*.pbm
-*.ppm
-*.sr
-*.ras
+#*.wsq
+#*.png
+#*.jpeg
+#*.jpe
+#*.jp2
+#*.bmp
+#*.dib
+#*.tif
+#*.tiff
+#*.pgm
+#*.pbm
+#*.ppm
+#*.sr
+#*.ras
 
 # output ignore #
 *.csv

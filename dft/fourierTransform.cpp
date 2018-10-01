@@ -75,6 +75,7 @@ void showCenteredDft(const cv::Mat& pSrc, const std::string title)
     normMag.convertTo(normMag, CV_8U);
     
     cv::imshow(title, normMag);
+    cv::imwrite("rai_original_centered.jpg", normMag);
 }
 
 
