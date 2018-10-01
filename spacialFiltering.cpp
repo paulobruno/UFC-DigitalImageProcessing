@@ -60,6 +60,7 @@ void medianFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, c
     }
 }
 
+
 void geometricMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad)
 {
 	unsigned int kRows_2 = size / 2;
@@ -105,20 +106,23 @@ void geometricMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int 
                 }
             }
 
-            int result = 1;
+            float result = 1.0f;
+            
             for (unsigned int i = 0; i < values.size(); ++i)
             {
-                result = result*values(i);
+                result = result * (float)values.at(i) / 255.0f;
             }
-            result = std::pow(result, 1/values.size());
 
-            // PB: ajusta o resultado para [0,255]			   
-            pDst.at<uchar>(row - 1, col - 1) = (uchar)std::max(0, std::min(255, result));
+            result = std::pow(result, 1.0f / (float)values.size());
+
+            // PB: ajusta o resultado para [0,255]
+            pDst.at<uchar>(row - 1, col - 1) = (uchar)std::max(0, std::min(255, (int)(255.0f * result)));
         }
     }
 }
 
-void hatmonicMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad)
+
+void harmonicMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad)
 {
 	unsigned int kRows_2 = size / 2;
     unsigned int kCols_2 = size / 2;
@@ -163,20 +167,24 @@ void hatmonicMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int s
                 }
             }
 
-            int result = 0;
+            float result = 0.0f;
+            
             for (unsigned int i = 0; i < values.size(); ++i)
             {
-                result = result + values(i);
+                result = result + (1.0f / (float)values.at(i));
             }
-            result = values.size()/result;
 
-            // PB: ajusta o resultado para [0,255]			   
-            pDst.at<uchar>(row - 1, col - 1) = (uchar)std::max(0, std::min(255, result));
+            result = (float)values.size() / result;
+
+            // PB: ajusta o resultado para [0,255]
+            pDst.at<uchar>(row - 1, col - 1) = (uchar)std::max(0, std::min(255, (int)result));
         }
     }
 }
 
-void counterHarmonicMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad, int q) // FL: esse argumento q define o expoente q da expressão
+
+// FL: esse argumento q define o expoente q da expressão
+void contraharmonicMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const int q, const unsigned int size, const Padding pPad) 
 {
 	unsigned int kRows_2 = size / 2;
     unsigned int kCols_2 = size / 2;
@@ -220,19 +228,25 @@ void counterHarmonicMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigne
                     values.push_back(src.at<uchar>(row+i, col+j));
                 }
             }
+                                   
 
-            int result = 0;
+            float result_sup = 0.0f;
+            float result_inf = 0.0f;
+            
             for (unsigned int i = 0; i < values.size(); ++i)
             {
-                result = result + values(i);
+                result_sup = result_sup + std::pow((float)values.at(i), q+1);
+                result_inf = result_inf + std::pow((float)values.at(i), q);
             }
-            result = std::pow(result, q+1)/std::pow(result, q);
 
-            // PB: ajusta o resultado para [0,255]			   
-            pDst.at<uchar>(row - 1, col - 1) = (uchar)std::max(0, std::min(255, result));
+            float result = result_sup / result_inf;
+            
+            // PB: ajusta o resultado para [0,255]
+            pDst.at<uchar>(row - 1, col - 1) = (uchar)std::max(0, std::min(255, (int)(result)));
         }
     }
 }
+
 
 void minimumFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad)
 {
@@ -289,6 +303,7 @@ void minimumFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, 
     }
 }
 
+
 void maximumFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad)
 {
 	unsigned int kRows_2 = size / 2;
@@ -344,6 +359,7 @@ void maximumFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, 
     }
 }
 
+
 void midpointFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad)
 {
     unsigned int kRows_2 = size / 2;
@@ -391,16 +407,10 @@ void midpointFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size,
 
             // FL: ordenando o vector values e pegando o seu ultimo valor (o mais alto)
             std::sort(values.begin(), values.end());
-            int result = 0.5*(values.begin() + values.end());
+            int result = 0.5 * (values.at(0) + values.at(size*size-1));
 
             // PB: ajusta o resultado para [0,255]             
             pDst.at<uchar>(row - 1, col - 1) = (uchar)std::max(0, std::min(255, result));
         }
     }
-
-
-    int int main(int argc, char const *argv[])
-    {
-        /* code */
-        return 0;
-    }
+}

@@ -7,12 +7,14 @@
 
 void medianFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size = 3, const Padding pPad = NOT_PADDED);
 
-void geometricMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad);
+void geometricMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size = 3, const Padding pPad = NOT_PADDED);
 
-void hatmonicMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad);
+void harmonicMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size = 3, const Padding pPad = NOT_PADDED);
 
-void counterHarmonicMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad, int q)
+void contraharmonicMeanFilter(const cv::Mat& pSrc, cv::Mat& pDst, const int q, const unsigned int size = 3, const Padding pPad = NOT_PADDED);
 
-void minimumFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad);
+void minimumFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size = 3, const Padding pPad = NOT_PADDED);
 
-void maximumFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size, const Padding pPad)
+void maximumFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size = 3, const Padding pPad = NOT_PADDED);
+
+void midpointFilter(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int size = 3, const Padding pPad = NOT_PADDED);
