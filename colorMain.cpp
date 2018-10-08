@@ -2,8 +2,7 @@
 #include <opencv2/opencv.hpp>
 #include <vector>
 
-#include "histogram.h"
-#include "filtering.h"
+#include "coloring.h"
 
 
 int main(int argc, const char** argv)
@@ -36,7 +35,7 @@ int main(int argc, const char** argv)
     
     cv::Mat sepiaImg;
     sepiaFilter(img, sepiaImg);
-    cv::imshow(sepiaImg);
+    cv::imshow("Sepia", sepiaImg);
 
 
 	cv::waitKey();
