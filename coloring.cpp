@@ -38,28 +38,77 @@ void cmyToRgb(const cv::Mat& pSrc, cv::Mat& pDst)
 
 void rgbToHsi(const cv::Mat& pSrc, cv::Mat& pDst)
 {
+  pDst = cv::Mat::zeros(pSrc.size(), CV_8UC3);
 
+  for (unsigned int i = 0; i < pSrc.rows; ++i)
+  {
+    for (unsigned int j = 0; j < pSrc.cols; ++j)
+    {
+      double B, G, R, PI = 3.14159265359;
+
+      B = pSrc.at<cv::Vec3b>(i, j).val[0];
+      G = pSrc.at<cv::Vec3b>(i, j).val[1];
+      R = pSrc.at<cv::Vec3b>(i, j).val[2];
+
+      double theta = std::acos(0.5*((R-G) + (R-B))/std::sqrt(pow((R-G), 2) + (R-B)*(G-B)));
+
+      // FL: Cada canal representará H, S e I
+      if (B <= G)
+      {
+        pDst.at<cv::Vec3b>(i, j).val[0] = theta; // H
+      } else
+      {
+        pDst.at<cv::Vec3b>(i, j).val[0] = 2.0*PI - theta; // H
+      }
+      pDst.at<cv::Vec3b>(i, j).val[1] = 1.0 - (3.0/(R + G + B))*std::min(R, std::min(G, B)) ; // S
+      pDst.at<cv::Vec3b>(i, j).val[2] = (R + G + B)/3.0; // I
+    }
+  }
 }
 
 void hsiToRgb(const cv::Mat& pSrc, cv::Mat& pDst)
 {
+  pDst = cv::Mat::zeros(pSrc.size(), CV_8UC3);
 
+  for (unsigned int i = 0; i < pSrc.rows; ++i)
+  {
+    for (unsigned int j = 0; j < pSrc.cols; ++j)
+    {
+      double H, S, I, PI = 3.14159265359;
+
+      // FL: Assumindo que os canais da matriz na imagem se comportam dessa maneira abaixo
+      H = pSrc.at<cv::Vec3b>(i, j).val[0];
+      if (((2.0/3.0)*PI <= H) && ((4.0/3.0)*PI > H))
+      {
+        H = H - (2.0/3.0)*PI;
+      }
+      S = pSrc.at<cv::Vec3b>(i, j).val[1];
+      I = pSrc.at<cv::Vec3b>(i, j).val[2];
+
+      // FL: Cada canal representará B, G e R
+      pDst.at<cv::Vec3b>(i, j).val[0] = I*(1-S); // B
+      pDst.at<cv::Vec3b>(i, j).val[1] = I*(1.0 + (S*std::cos(H))/(std::cos((PI/3.0) - H))); // G
+      pDst.at<cv::Vec3b>(i, j).val[2] = I*(1.0 - S); // R
+    }
+  }
 }
 
 void cmyToHsi(const cv::Mat& pSrc, cv::Mat& pDst)
 {
-
+  cmyToRgb(pSrc, pDst);
+  rgbToHsi(pSrc, pDst);
 }
 
 void hsiToCmy(const cv::Mat& pSrc, cv::Mat& pDst)
 {
-
+  hsiToRgb(pSrc, pDst);
+  rgbToCmy(pSrc, pDst);
 }
 
 void sepiaFilter(const cv::Mat& pSrc, cv::Mat& pDst)
 {
     pDst = cv::Mat::zeros(pSrc.size(), CV_8UC3);
-    
+
     for (unsigned int y = 0; y < pSrc.rows; ++y)
     {
         for (unsigned int x = 0; x < pSrc.cols; ++x)
@@ -67,11 +116,11 @@ void sepiaFilter(const cv::Mat& pSrc, cv::Mat& pDst)
             float blue = (float)pSrc.at<cv::Vec3b>(y,x).val[0];
             float green = (float)pSrc.at<cv::Vec3b>(y,x).val[1];
             float red = (float)pSrc.at<cv::Vec3b>(y,x).val[2];
-            
+
             int  newBlue = (int)(0.272f * red) + (0.534 * green) + (0.131 * blue);
             int newGreen = (int)(0.349f * red) + (0.686f * green) + (0.168 * blue);
             int   newRed = (int)(0.393f * red) + (0.769f * green) + (0.189 * blue);
-            
+
             pDst.at<cv::Vec3b>(y,x).val[0] = (uchar)std::max(0, std::min(255, newBlue));
             pDst.at<cv::Vec3b>(y,x).val[1] = (uchar)std::max(0, std::min(255, newGreen));
             pDst.at<cv::Vec3b>(y,x).val[2] = (uchar)std::max(0, std::min(255, newRed));
@@ -82,24 +131,18 @@ void sepiaFilter(const cv::Mat& pSrc, cv::Mat& pDst)
 
 void chromaKeying(const cv::Mat& pSrc, cv::Mat& pDst, const cv::Vec3b pColorKey, unsigned char pEpsilon)
 {
-<<<<<<< HEAD
-    pDst = cv::Mat::zeros(pSrc.size(), CV_8U);
-
-=======
     pDst = cv::Mat::zeros(pSrc.size(), CV_8UC3);
-    
->>>>>>> c3b00e8d3c1095355a13569427212d9f80b9ce62
+
+
     for (unsigned int y = 0; y < pSrc.rows; ++y)
     {
         for (unsigned int x = 0; x < pSrc.cols; ++x)
         {
             cv::Vec3b intensity = pSrc.at<cv::Vec3b>(y,x);
-<<<<<<< HEAD
 
-=======
-            
+
             //std::cout << intensity << " " << pColorKey << "\n";
->>>>>>> c3b00e8d3c1095355a13569427212d9f80b9ce62
+
             for (unsigned int channel = 0; channel < 3; ++channel)
             {
                 if ((intensity.val[channel] > (pColorKey.val[channel] + pEpsilon)) || (intensity.val[channel] < (pColorKey.val[channel] - pEpsilon)))

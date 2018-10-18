@@ -34,10 +34,12 @@ int main(int argc, const char** argv)
     cmyToRgb(cmyImg, rgbImg);
     cv::imshow("cmyRgb", rgbImg);
 
-/*
+
     cv::Mat hsiImg;
     rgbToCmy(img, hsiImg);
+    cv::imshow("rgbHsi", hsiImg);
 
+/*
     cv::Mat sepiaImg;
     sepiaFilter(img, sepiaImg);
     cv::imshow("Sepia", sepiaImg);
