@@ -30,9 +30,9 @@ int main(int argc, const char** argv)
     rgbToCmy(img, cmyImg); // teste
     cv::imshow("rgbCmy", cmyImg);
 
-    cv::Mat rgbFromCmyImg;
-    cmyToRgb(cmyImg, rgbFromCmyImg);
-    cv::imshow("cmyRgb", rgbFromCmyImg);
+    cv::Mat rgbImg;
+    cmyToRgb(cmyImg, rgbImg);
+    cv::imshow("cmyRgb", rgbImg);
 
 /*
     cv::Mat hsiImg;
