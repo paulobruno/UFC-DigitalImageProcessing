@@ -66,7 +66,7 @@ int main(int argc, const char** argv)
     
     // Counter harmonic mean filter
     cv::Mat counterHarmImg;
-    contraharmonicMeanFilter(img, counterHarmImg, 1);
+    contraharmonicMeanFilter(img, counterHarmImg, -2);
     cv::imshow("Counter harmonic mean", counterHarmImg);
     std::cout << "cou\n";
 

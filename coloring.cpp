@@ -4,12 +4,35 @@
 
 void rgbToCmy(const cv::Mat& pSrc, cv::Mat& pDst)
 {
+  pDst = cv::Mat::zeros(pSrc.size(), CV_8UC3);
 
+  for (unsigned int i = 0; i < pSrc.rows; ++i)
+  {
+    for (unsigned int j = 0; j < pSrc.cols; ++j)
+    {
+      for (int channel = 0; channel < 3; ++channel)
+      {
+        pDst.at<cv::Vec3b>(i, j).val[channel] = 255 - pSrc.at<cv::Vec3b>(i, j).val[channel];
+      }
+    }
+  }
 }
 
 void cmyToRgb(const cv::Mat& pSrc, cv::Mat& pDst)
 {
+  // FL: Coloquei o mesmo código do rgbToCmy
+  pDst = cv::Mat::zeros(pSrc.size(), CV_8UC3);
 
+  for (unsigned int i = 0; i < pSrc.rows; ++i)
+  {
+    for (unsigned int j = 0; j < pSrc.cols; ++j)
+    {
+      for (int channel = 0; channel < 3; ++channel)
+      {
+        pDst.at<cv::Vec3b>(i, j).val[channel] = 255 - pSrc.at<cv::Vec3b>(i, j).val[channel];
+      }
+    }
+  }
 }
 
 void rgbToHsi(const cv::Mat& pSrc, cv::Mat& pDst)
@@ -41,13 +64,13 @@ void sepiaFilter(const cv::Mat& pSrc, cv::Mat& pDst)
 void chromaKeying(const cv::Mat& pSrc, cv::Mat& pDst, const cv::Vec3b pColorKey, unsigned int pEpsilon)
 {
     pDst = cv::Mat::zeros(pSrc.size(), CV_8U);
-    
+
     for (unsigned int y = 0; y < pSrc.rows; ++y)
     {
         for (unsigned int x = 0; x < pSrc.cols; ++x)
         {
             cv::Vec3b intensity = pSrc.at<cv::Vec3b>(y,x);
-            
+
             for (unsigned int channel = 0; channel < 3; ++channel)
             {
                 if ((intensity.val[channel] > (pColorKey.val[channel] + 20)) || (intensity.val[channel] < (pColorKey.val[channel] - 20)))
@@ -56,7 +79,7 @@ void chromaKeying(const cv::Mat& pSrc, cv::Mat& pDst, const cv::Vec3b pColorKey,
                 }
             }
         }
-    }    
+    }
 }
 
 
