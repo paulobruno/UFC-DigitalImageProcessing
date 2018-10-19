@@ -55,6 +55,12 @@ int main(int argc, const char** argv)
     sepiaFilter(img, sepiaImg);
     cv::imshow("Sepia", sepiaImg);
 
+    cv::Mat chromaImg = cv::imread("chroma_key.jpg", cv::IMREAD_COLOR);
+    cv::Mat keyedMat;
+    cv::Vec3b key = {25, 175, 55};
+    cv::Vec3b pEpsilon = {25, 80, 25};
+    chromaKeying(chromaImg, keyedMat, key, pEpsilon);
+    cv::imshow("Chroma Key", keyedMat);
 
     cv::waitKey();
 

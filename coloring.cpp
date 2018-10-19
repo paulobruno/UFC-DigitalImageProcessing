@@ -44,24 +44,29 @@ void rgbToHsi(const cv::Mat& pSrc, cv::Mat& pDst)
   {
     for (unsigned int j = 0; j < pSrc.cols; ++j)
     {
-      double B, G, R, PI = 3.14159265359;
+      double H, S, I, B, G, R, PI = 3.14159265359;
 
-      B = pSrc.at<cv::Vec3b>(i, j).val[0];
-      G = pSrc.at<cv::Vec3b>(i, j).val[1];
-      R = pSrc.at<cv::Vec3b>(i, j).val[2];
+      B = normToTrigFuncInput( pSrc.at<cv::Vec3b>(i, j).val[0] );
+      G = normToTrigFuncInput( pSrc.at<cv::Vec3b>(i, j).val[1] );
+      R = normToTrigFuncInput( pSrc.at<cv::Vec3b>(i, j).val[2] );
 
       double theta = std::acos(0.5*((R-G) + (R-B))/std::sqrt(pow((R-G), 2) + (R-B)*(G-B)));
 
       // FL: Cada canal representará H, S e I
       if (B <= G)
       {
-        pDst.at<cv::Vec3b>(i, j).val[0] = theta; // H
+        H = theta; // H
       } else
       {
-        pDst.at<cv::Vec3b>(i, j).val[0] = 2.0*PI - theta; // H
+        H = 2.0*PI - theta; // H
       }
-      pDst.at<cv::Vec3b>(i, j).val[1] = 1.0 - (3.0/(R + G + B))*std::min(R, std::min(G, B)) ; // S
-      pDst.at<cv::Vec3b>(i, j).val[2] = (R + G + B)/3.0; // I
+      S = 1.0 - (3.0/(R + G + B))*std::min(R, std::min(G, B)) ; // S
+      I = (R + G + B)/3.0; // I
+
+
+      pDst.at<cv::Vec3b>(i, j).val[0] = normToGreatIntervalValues( H );
+      pDst.at<cv::Vec3b>(i, j).val[1] = normToGreatIntervalValues( S );
+      pDst.at<cv::Vec3b>(i, j).val[2] = normToGreatIntervalValues( I );
     }
   }
 }
@@ -76,12 +81,12 @@ void hsiToRgb(const cv::Mat& pSrc, cv::Mat& pDst)
     for (unsigned int j = 0; j < pSrc.cols; ++j)
     {
       // FL: Assumindo que os canais da matriz na imagem se comportam dessa maneira abaixo
-      H = pSrc.at<cv::Vec3b>(i, j).val[0];
-      S = pSrc.at<cv::Vec3b>(i, j).val[1];
-      I = pSrc.at<cv::Vec3b>(i, j).val[2];
+      H = 2*PI*normToTrigFuncInput( pSrc.at<cv::Vec3b>(i, j).val[0] );
+      S = normToTrigFuncInput( pSrc.at<cv::Vec3b>(i, j).val[1] );
+      I = normToTrigFuncInput( pSrc.at<cv::Vec3b>(i, j).val[2] );
 
       // FL: Cada canal representará B, G e R
-      if ((2.0/3.0)*PI > H)
+      if ((0.0 <= H) && ((2.0/3.0)*PI > H))
       {
         B = I*(1.0-S); // B
         R = I*(1.0 + (S*std::cos(H))/(std::cos((PI/3.0) - H))); // R
@@ -91,8 +96,8 @@ void hsiToRgb(const cv::Mat& pSrc, cv::Mat& pDst)
       {
         H = H - (2.0/3.0)*PI;
 
-        R = pDst.at<cv::Vec3b>(i, j).val[2] = I*(1.0-S); // R
-        G = pDst.at<cv::Vec3b>(i, j).val[1] = I*(1.0 + (S*std::cos(H))/(std::cos((PI/3.0) - H))); // G
+        R = I*(1.0-S); // R
+        G = I*(1.0 + (S*std::cos(H))/(std::cos((PI/3.0) - H))); // G
         B = 3.0*I - (R+G); // B
       }
       else if (((4.0/3.0)*PI <= H) && (2.0*PI > H))
@@ -104,9 +109,9 @@ void hsiToRgb(const cv::Mat& pSrc, cv::Mat& pDst)
         R = 3.0*I - (G+B); // R
       }
 
-      pDst.at<cv::Vec3b>(i, j).val[0] = B;
-      pDst.at<cv::Vec3b>(i, j).val[1] = G;
-      pDst.at<cv::Vec3b>(i, j).val[2] = R;
+      pDst.at<cv::Vec3b>(i, j).val[0] = normToGreatIntervalValues( B );
+      pDst.at<cv::Vec3b>(i, j).val[1] = normToGreatIntervalValues( G );
+      pDst.at<cv::Vec3b>(i, j).val[2] = normToGreatIntervalValues( R );
     }
   }
 }
@@ -147,7 +152,7 @@ void sepiaFilter(const cv::Mat& pSrc, cv::Mat& pDst)
 }
 
 
-void chromaKeying(const cv::Mat& pSrc, cv::Mat& pDst, const cv::Vec3b pColorKey, unsigned char pEpsilon)
+void chromaKeying(const cv::Mat& pSrc, cv::Mat& pDst, const cv::Vec3b pColorKey, const cv::Vec3b pEpsilon)
 {
     pDst = cv::Mat::zeros(pSrc.size(), CV_8UC3);
 
@@ -163,9 +168,10 @@ void chromaKeying(const cv::Mat& pSrc, cv::Mat& pDst, const cv::Vec3b pColorKey,
 
             for (unsigned int channel = 0; channel < 3; ++channel)
             {
-                if ((intensity.val[channel] > (pColorKey.val[channel] + pEpsilon)) || (intensity.val[channel] < (pColorKey.val[channel] - pEpsilon)))
+                if ((intensity.val[channel] > (pColorKey.val[channel] + pEpsilon.val[channel])) || (intensity.val[channel] < (pColorKey.val[channel] - pEpsilon.val[channel])))
                 {
-                    pDst.at<cv::Vec3b>(y,x).val[channel] = pSrc.at<cv::Vec3b>(y,x).val[channel];
+                  pDst.at<cv::Vec3b>(y,x) = pSrc.at<cv::Vec3b>(y,x);
+                  break;
                 }
             }
         }
@@ -259,4 +265,15 @@ void adjustBrightAndContrast(const cv::Mat& pSrc, cv::Mat& pDst, const float pGa
             }
         }
     }
+}
+
+
+float normToTrigFuncInput(double value)
+{
+  return (value - 127.5)/127.5;
+}
+
+float normToGreatIntervalValues(double value)
+{
+  return (value + 1.0)*127.5;
 }

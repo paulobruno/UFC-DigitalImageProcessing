@@ -16,7 +16,7 @@ void hsiToCmy(const cv::Mat& pSrc, cv::Mat& pDst);
 void sepiaFilter(const cv::Mat& pSrc, cv::Mat& pDst);
 
 
-void chromaKeying(const cv::Mat& pSrc, cv::Mat& pDst, const cv::Vec3b pColorKey, unsigned char pEpsilon = 20);
+void chromaKeying(const cv::Mat& pSrc, cv::Mat& pDst, const cv::Vec3b pColorKey, const cv::Vec3b pEpsilon);
 
 void imageSubtraction(const cv::Mat& pSrc1, const cv::Mat& pSrc2, cv::Mat& pDst);
 
@@ -27,3 +27,7 @@ void adjustBrightness(const cv::Mat& pSrc, cv::Mat& pDst, const uchar pBrightnes
 void adjustContrast(const cv::Mat& pSrc, cv::Mat& pDst, const float pGain);
 
 void adjustBrightAndContrast(const cv::Mat& pSrc, cv::Mat& pDst, const float pGain, const uchar pBrightness);
+
+float normToTrigFuncInput(double value);
+
+float normToGreatIntervalValues(double value);
