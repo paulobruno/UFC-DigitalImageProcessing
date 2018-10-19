@@ -36,14 +36,25 @@ int main(int argc, const char** argv)
 
 
     cv::Mat hsiImg;
-    rgbToCmy(img, hsiImg);
+    rgbToHsi(img, hsiImg);
     cv::imshow("rgbHsi", hsiImg);
 
-/*
+    cv::Mat rgbFromHsiImg;
+    hsiToRgb(img, rgbFromHsiImg);
+    cv::imshow("hsiRgb", rgbFromHsiImg);
+
+    cv::Mat cmyFromHsiImg;
+    hsiToCmy(img, cmyFromHsiImg);
+    cv::imshow("hsiCmy", cmyFromHsiImg);
+
+    cv::Mat hsiFromCmyImg;
+    cmyToHsi(img, hsiFromCmyImg);
+    cv::imshow("cmyHsi", hsiFromCmyImg);
+
     cv::Mat sepiaImg;
     sepiaFilter(img, sepiaImg);
     cv::imshow("Sepia", sepiaImg);
-*/
+
 
     cv::waitKey();
 

@@ -68,27 +68,45 @@ void rgbToHsi(const cv::Mat& pSrc, cv::Mat& pDst)
 
 void hsiToRgb(const cv::Mat& pSrc, cv::Mat& pDst)
 {
+  double B, G, R, H, S, I, PI = 3.14159265359;
   pDst = cv::Mat::zeros(pSrc.size(), CV_8UC3);
 
   for (unsigned int i = 0; i < pSrc.rows; ++i)
   {
     for (unsigned int j = 0; j < pSrc.cols; ++j)
     {
-      double H, S, I, PI = 3.14159265359;
-
       // FL: Assumindo que os canais da matriz na imagem se comportam dessa maneira abaixo
       H = pSrc.at<cv::Vec3b>(i, j).val[0];
-      if (((2.0/3.0)*PI <= H) && ((4.0/3.0)*PI > H))
-      {
-        H = H - (2.0/3.0)*PI;
-      }
       S = pSrc.at<cv::Vec3b>(i, j).val[1];
       I = pSrc.at<cv::Vec3b>(i, j).val[2];
 
       // FL: Cada canal representará B, G e R
-      pDst.at<cv::Vec3b>(i, j).val[0] = I*(1-S); // B
-      pDst.at<cv::Vec3b>(i, j).val[1] = I*(1.0 + (S*std::cos(H))/(std::cos((PI/3.0) - H))); // G
-      pDst.at<cv::Vec3b>(i, j).val[2] = I*(1.0 - S); // R
+      if ((2.0/3.0)*PI > H)
+      {
+        B = I*(1.0-S); // B
+        R = I*(1.0 + (S*std::cos(H))/(std::cos((PI/3.0) - H))); // R
+        G = 3.0*I - (R+B); // G
+      }
+      else if (((2.0/3.0)*PI <= H) && ((4.0/3.0)*PI > H))
+      {
+        H = H - (2.0/3.0)*PI;
+
+        R = pDst.at<cv::Vec3b>(i, j).val[2] = I*(1.0-S); // R
+        G = pDst.at<cv::Vec3b>(i, j).val[1] = I*(1.0 + (S*std::cos(H))/(std::cos((PI/3.0) - H))); // G
+        B = 3.0*I - (R+G); // B
+      }
+      else if (((4.0/3.0)*PI <= H) && (2.0*PI > H))
+      {
+        H = H - (4.0/3.0)*PI;
+
+        G = I*(1.0-S); // G
+        B = I*(1.0 + (S*std::cos(H))/(std::cos((PI/3.0) - H))); // B
+        R = 3.0*I - (G+B); // R
+      }
+
+      pDst.at<cv::Vec3b>(i, j).val[0] = B;
+      pDst.at<cv::Vec3b>(i, j).val[1] = G;
+      pDst.at<cv::Vec3b>(i, j).val[2] = R;
     }
   }
 }
