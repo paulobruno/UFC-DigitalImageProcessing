@@ -40,7 +40,7 @@ int main(int argc, const char** argv)
     cv::imshow("rgbHsi", hsiImg);
 
     cv::Mat rgbFromHsiImg;
-    hsiToRgb(img, rgbFromHsiImg);
+    hsiToRgb(hsiImg, rgbFromHsiImg); // FL: peguei a matriz em hsi para devolver os valores em rgb
     cv::imshow("hsiRgb", rgbFromHsiImg);
 
     cv::Mat cmyFromHsiImg;

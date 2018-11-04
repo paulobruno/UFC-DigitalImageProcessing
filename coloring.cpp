@@ -81,7 +81,7 @@ void hsiToRgb(const cv::Mat& pSrc, cv::Mat& pDst)
     for (unsigned int j = 0; j < pSrc.cols; ++j)
     {
       // FL: Assumindo que os canais da matriz na imagem se comportam dessa maneira abaixo
-      H = 2*PI*normToTrigFuncInput( pSrc.at<cv::Vec3b>(i, j).val[0] );
+      H = 2.0*PI*normToTrigFuncInput( pSrc.at<cv::Vec3b>(i, j).val[0] );
       S = normToTrigFuncInput( pSrc.at<cv::Vec3b>(i, j).val[1] );
       I = normToTrigFuncInput( pSrc.at<cv::Vec3b>(i, j).val[2] );
 
@@ -270,10 +270,12 @@ void adjustBrightAndContrast(const cv::Mat& pSrc, cv::Mat& pDst, const float pGa
 
 float normToTrigFuncInput(double value)
 {
-  return (value - 127.5)/127.5;
+  //if (127.5 > value)
+    //value = value - 127.5;
+  return value/190.0;
 }
 
 float normToGreatIntervalValues(double value)
 {
-  return (value + 1.0)*127.5;
+  return value*190.0;
 }
