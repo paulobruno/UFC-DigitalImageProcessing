@@ -85,9 +85,43 @@ void recursiveHaarTransform(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned i
 }
 
 
-void optimalHaarTransform(const cv::Mat& pSrc, cv::Mat& pDst, const float pThreshold)
+void normalHaarTransform(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int pMaxIterations)
 {
-    if (1 == pSrc.rows)
+    if ((0 >= pMaxIterations) || (1 == pSrc.rows))
+    {
+        pDst = pSrc.clone();
+        return;
+    }
+
+    cv::Mat haarImg;
+    haarTransform(pSrc, haarImg);
+    
+    unsigned int size_w = pSrc.cols /2;
+    unsigned int size_h = pSrc.rows /2;
+
+    cv::Rect topLeftRect = cv::Rect(0, 0, size_w, size_h);
+    cv::Rect topRightRect = cv::Rect(size_w, 0, size_w, size_h);
+    cv::Rect bottomLeftRect = cv::Rect(0, size_h, size_w, size_h);
+    cv::Rect bottomRightRect = cv::Rect(size_w, size_h, size_w, size_h);
+
+    cv::Mat topLeftMat = haarImg(topLeftRect);
+    cv::Mat topRightMat = haarImg(topRightRect);
+    cv::Mat bottomLeftMat = haarImg(bottomLeftRect);
+    cv::Mat bottomRightMat = haarImg(bottomRightRect);
+
+    normalHaarTransform(topLeftMat, topLeftMat, pMaxIterations-1);
+
+    pDst = cv::Mat::zeros(pSrc.size(), CV_32F);
+
+    topLeftMat.copyTo(pDst(topLeftRect));
+    topRightMat.copyTo(pDst(topRightRect));
+    bottomLeftMat.copyTo(pDst(bottomLeftRect));
+    bottomRightMat.copyTo(pDst(bottomRightRect));    
+}
+
+void optimalHaarTransform(const cv::Mat& pSrc, cv::Mat& pDst, const float pThreshold, const unsigned int pMaxIterations)
+{
+    if ((0 >= pMaxIterations) || (1 == pSrc.rows))
     {
         pDst = pSrc.clone();
         return;
@@ -101,8 +135,8 @@ void optimalHaarTransform(const cv::Mat& pSrc, cv::Mat& pDst, const float pThres
     std::cout << "step:\n";
     std::cout << pSrc << "\n";
     std::cout << haarImg << "\n";
-    std::cout << imageEnergy(pSrc) << " " << imageEnergy(haarImg) << "\n\n";*/
-
+    std::cout << imageEnergy(pSrc) << " " << imageEnergy(haarImg) << "\n\n";
+*/
     if (imageEnergy(pSrc) <= imageEnergy(haarImg))
     {
         pDst = pSrc.clone();
@@ -122,10 +156,10 @@ void optimalHaarTransform(const cv::Mat& pSrc, cv::Mat& pDst, const float pThres
     cv::Mat bottomLeftMat = haarImg(bottomLeftRect);
     cv::Mat bottomRightMat = haarImg(bottomRightRect);
 
-    optimalHaarTransform(topLeftMat, topLeftMat, pThreshold);
-    optimalHaarTransform(topRightMat, topRightMat, pThreshold);
-    optimalHaarTransform(bottomLeftMat, bottomLeftMat, pThreshold);
-    optimalHaarTransform(bottomRightMat, bottomRightMat, pThreshold);
+    optimalHaarTransform(topLeftMat, topLeftMat, pThreshold, pMaxIterations-1);
+    optimalHaarTransform(topRightMat, topRightMat, pThreshold, pMaxIterations-1);
+    optimalHaarTransform(bottomLeftMat, bottomLeftMat, pThreshold, pMaxIterations-1);
+    optimalHaarTransform(bottomRightMat, bottomRightMat, pThreshold, pMaxIterations-1);
 
     pDst = cv::Mat::zeros(pSrc.size(), CV_32F);
 

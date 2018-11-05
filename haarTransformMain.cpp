@@ -46,10 +46,22 @@ int main(int argc, char** argv)
         
         
     cv::Mat optimalHaar;
-    optimalHaarTransform(img, optimalHaar, 0.5f); 
+    optimalHaarTransform(img, optimalHaar, 0.0f, 3); 
     
+    std::cout << imageEnergy(img) << "\n";
+    std::cout << imageEnergy(optimalHaar) << "\n";
+
+    //optimalHaar = optimalHaar + 1000.0f;
     cv::normalize(optimalHaar, optimalHaar, 0, 255, cv::NORM_MINMAX, CV_8U);
     cv::imshow("Optimal Haar", optimalHaar);
+
+
+    cv::Mat normalHaar;
+    normalHaarTransform(img, normalHaar, 3);
+
+    std::cout << imageEnergy(normalHaar) << "\n";
+    cv::normalize(normalHaar, normalHaar, 0, 255, cv::NORM_MINMAX, CV_8U);
+    cv::imshow("normal haar", normalHaar);
 	
 	/*
 
