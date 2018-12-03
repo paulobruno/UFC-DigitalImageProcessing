@@ -1,7 +1,8 @@
-
 #include <opencv2/opencv.hpp>
 #include <cstdio>
 #include <cmath>
+#include <cstdlib>
+
 
 void erosion(const cv::Mat& pSrc, cv::Mat& pDst, const int erosionSize)
 {
@@ -10,14 +11,13 @@ void erosion(const cv::Mat& pSrc, cv::Mat& pDst, const int erosionSize)
                        cv::Point( erosionSize, erosionSize ) );
 	int minimumPointValue = 999; // FL: Valor minimo que sera atribuido ao ponto coincidente ao
 								 // central do elemento estrutural na imagem de destino
-	pDst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
+ 
+	cv::Mat dst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
 
 	for (unsigned int i = 0; i < pSrc.rows-1 - structuralElement.rows; ++i)
 	{
 		for (unsigned int j = 0; j < pSrc.cols-1 - structuralElement.cols; ++j)
 		{
-
-
 			for (unsigned int k = 0; k < structuralElement.rows; ++k)
 			{
 				for (unsigned int l = 0; l < structuralElement.cols; ++l)
@@ -28,11 +28,15 @@ void erosion(const cv::Mat& pSrc, cv::Mat& pDst, const int erosionSize)
 					}
 				}
 			}
-			pDst.at<uchar>(i+erosionSize, j+erosionSize) = minimumPointValue;
+			
+			dst.at<uchar>(i+erosionSize, j+erosionSize) = minimumPointValue;
 			minimumPointValue = 999;
 		}	
 	}
+	
+	pDst = dst.clone();
 }
+
 
 void dilation(const cv::Mat& pSrc, cv::Mat& pDst, const int dilationSize)
 {
@@ -43,14 +47,12 @@ void dilation(const cv::Mat& pSrc, cv::Mat& pDst, const int dilationSize)
 	int maximumPointValue = -1; // FL: Valor minimo que sera atribuido ao ponto coincidente ao
 								 // central do elemento estrutural na imagem de destino
 	
-	pDst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
+	cv::Mat dst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
 
 	for (unsigned int i = 0; i < pSrc.rows-1 - structuralElement.rows; ++i)
 	{
 		for (unsigned int j = 0; j < pSrc.cols-1 - structuralElement.cols; ++j)
 		{
-
-
 			for (unsigned int k = 0; k < structuralElement.rows; ++k)
 			{
 				for (unsigned int l = 0; l < structuralElement.cols; ++l)
@@ -61,39 +63,63 @@ void dilation(const cv::Mat& pSrc, cv::Mat& pDst, const int dilationSize)
 					}
 				}
 			}
-			pDst.at<uchar>(i+dilationSize, j+dilationSize) = maximumPointValue;
+			dst.at<uchar>(i+dilationSize, j+dilationSize) = maximumPointValue;
 			maximumPointValue = -1;
 		}	
 	}
+	
+	pDst = dst.clone();
 }
 
-void morphologicalGradient(const cv::Mat& pSrc, cv::Mat& pDst)
+
+void opening(const cv::Mat& pSrc, cv::Mat& pDst, const int elementRadius)
+{
+    cv::Mat erosionImg;
+    
+	erosion(pSrc, erosionImg, elementRadius);
+
+	dilation(erosionImg, pDst, elementRadius);
+}
+
+
+void closing(const cv::Mat& pSrc, cv::Mat& pDst, const int elementRadius)
+{
+    cv::Mat dilationImg;
+    
+	dilation(pSrc, dilationImg, elementRadius);
+	
+	erosion(dilationImg, pDst, elementRadius);
+}
+
+
+void morphologicalGradient(const cv::Mat& pSrc, cv::Mat& pDst, const int elementSize)
 {
 	cv::Mat erosionImg, dilationImg;
-	const int elementSize = 20;
 
-	pDst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
+	cv::Mat dst = cv::Mat::zeros(pSrc.rows, pSrc.cols, CV_8U);
 
 	erosion(pSrc, erosionImg, elementSize);
 
 	dilation(pSrc, dilationImg, elementSize);
 
-	for (unsigned i = 0; i < pDst.rows; ++i)
+	for (unsigned i = 0; i < dst.rows; ++i)
 	{
-		for (unsigned j = 0; j < pDst.cols; ++j)
+		for (unsigned j = 0; j < dst.cols; ++j)
 		{
-			pDst.at<uchar>(i, j) = dilationImg.at<uchar>(i, j) - erosionImg.at<uchar>(i, j);
+			dst.at<uchar>(i, j) = dilationImg.at<uchar>(i, j) - erosionImg.at<uchar>(i, j);
 		}
 	}
+	
+	pDst = dst.clone();
 }
+
 
 int main(int argc, char** argv)
 {
-
-	if (2 > argc)
+	if (3 > argc)
 	{
 		std::cout << "Error: incorrect number of args.\n"
-				   << "Usage: " << argv[0] << " <image>\n";
+				   << "Usage: " << argv[0] << " <image> <structuring element size>\n";
 		return -1;
 	}
 
@@ -108,19 +134,32 @@ int main(int argc, char** argv)
 	}
 
 	cv::imshow(filename, img);
+	
+	const int elementSize = atoi(argv[2]);
+
 
 	cv::Mat erosionImg;
-	erosion(img, erosionImg, 3);
+	erosion(img, erosionImg, elementSize);
 	cv::imshow("Erosion", erosionImg);
 
 	cv::Mat dilationImg;
-	dilation(img, dilationImg, 10);
+	dilation(img, dilationImg, elementSize);
 	cv::imshow("Dilation", dilationImg);
 
+	cv::Mat openingImg;
+	opening(img, openingImg, elementSize);
+	cv::imshow("Opening", openingImg);
+	
+	cv::Mat closingImg;
+	closing(img, closingImg, elementSize);
+	cv::imshow("Closing", closingImg);
+	
 	cv::Mat gradientImg;
-	morphologicalGradient(img, gradientImg);
+	morphologicalGradient(img, gradientImg, elementSize);
 	cv::imshow("Morphological Gradient", gradientImg);
 
 	cv::waitKey();
+	
+	
 	return 0;
 }
