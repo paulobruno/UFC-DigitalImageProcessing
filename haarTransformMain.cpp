@@ -29,13 +29,14 @@ int main(int argc, char** argv)
 	cv::imshow(filename, img);
 	img.convertTo(img, CV_32F);
 
-    
+    /*
     cv::Mat haar;
-    haarTransform(img, haar);    
+    haarTransform(img, haar);
     
     // OpenCV needs normalization to properly show the image    
-    cv::normalize(haar, haar, 0, 255, cv::NORM_MINMAX, CV_8U);
-    cv::imshow("Haar", haar);
+    cv::Mat normHaar;
+    cv::normalize(haar, normHaar, 0, 255, cv::NORM_MINMAX, CV_8U);
+    cv::imshow("Haar", normHaar);
     
     
     cv::Mat recursiveHaar;
@@ -63,7 +64,14 @@ int main(int argc, char** argv)
     cv::normalize(normalHaar, normalHaar, 0, 255, cv::NORM_MINMAX, CV_8U);
     cv::imshow("normal haar", normalHaar);
 	
-	/*
+	
+	cv::Mat invHaar;
+	inverseHaarTransform(haar, invHaar);
+	
+	cv::normalize(invHaar, invHaar, 0, 255, cv::NORM_MINMAX, CV_8U);
+	cv::imshow("Inverse Haar", invHaar);*/
+	
+	
 
     int teste_data[64] = {88, 88,  89,  90,  92,  94,  96,  97,
                           90, 90,  91,  92,  93,  95,  97,  97,
@@ -80,7 +88,11 @@ int main(int argc, char** argv)
     cv::Mat opth;
     optimalHaarTransform(teste, opth, 0.5f);
     
-    std::cout << opth << "\n";*/
+//    std::cout << opth << "\n";
+
+    cv::Mat haarTeste, invTeste;
+    haarTransform(teste, haarTeste);
+    inverseHaarTransform(haarTeste, invTeste);
     
 	
 	cv::waitKey();

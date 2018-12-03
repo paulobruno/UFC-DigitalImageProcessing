@@ -190,3 +190,38 @@ void threshold(const cv::Mat& pSrc, cv::Mat& pDst, const float pThreshold)
     
     //std::cout << "\t" << pDst << "\n";
 }
+
+
+void inverseHaarTransform(const cv::Mat& pSrc, cv::Mat& pDst)
+{
+    cv::Mat H1 = cv::Mat::zeros(pSrc.size(), CV_32F);
+
+    unsigned int size_w = pSrc.cols /2;
+    unsigned int size_h = pSrc.rows /2;
+
+    for (unsigned int i = 0, j = 0; i < size_h, j < size_w; ++i, j+=2)
+    {
+        H1.at<float>(i,   j) = 1.0f;
+        H1.at<float>(i, j+1) = 1.0f;
+    }
+
+    for (unsigned int i = size_h, j = 0; i < pSrc.rows, j < size_w; ++i, j+=2)
+    {
+        H1.at<float>(i,   j) =  1.0f;
+        H1.at<float>(i, j+1) = -1.0f;
+    }
+    
+    cv::Mat H1T;
+    cv::transpose(H1, H1T);
+    
+    std::cout << pSrc << "\n";
+    
+    cv::Mat A;
+    A = pSrc * H1;
+    
+    std::cout << A << "\n";
+    
+    pDst = H1T * A;
+    
+    std::cout << pDst << "\n";
+}

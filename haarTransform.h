@@ -14,3 +14,5 @@ void optimalHaarTransform(const cv::Mat& pSrc, cv::Mat& pDst, const float pThres
 void threshold(const cv::Mat& pSrc, cv::Mat& pDst, const float pThreshold = 0.0f);
 
 void normalHaarTransform(const cv::Mat& pSrc, cv::Mat& pDst, const unsigned int pMaxIterations = 2);
+
+void inverseHaarTransform(const cv::Mat& pSrc, cv::Mat& pDst);
